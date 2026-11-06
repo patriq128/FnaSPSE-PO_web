@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0a0a0b" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>FnaSPSE</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <main class="content">
+        <section
+          class="screen screen--auth"
+          id="auth-screen"
+          aria-labelledby="auth-title"
+        >
+          <h1 class="wordmark" id="auth-title">FnaSPSE</h1>
+
+          <form class="password-form" id="password-form" novalidate>
+            <label class="visually-hidden" for="password">Password</label>
+            <input
+              class="password-input"
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Password"
+              autocomplete="current-password"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+              maxlength="256"
+              aria-describedby="form-error"
+              required
+            />
+            <button class="button" id="submit-button" type="submit">
+              Continue
+            </button>
+            <p
+              class="form-error"
+              id="form-error"
+              role="alert"
+              aria-live="polite"
+            ></p>
+          </form>
+        </section>
+
+        <section
+          class="screen screen--downloads"
+          id="downloads-screen"
+          aria-labelledby="downloads-title"
+          hidden
+        >
+          <header class="downloads-header">
+            <h1 class="downloads-title" id="downloads-title">FnaSPSE</h1>
+            <p class="subtitle">
+              Mam rad hlinu a vyber si OS :3
+            </p>
+            <p class="description" id="game-description" hidden></p>
+          </header>
+
+          <ul class="platforms" id="platforms" aria-label="Downloads"></ul>
+        </section>
+      </main>
+
+      <footer class="site-footer" id="site-footer">FnaSPSE</footer>
+    </div>
+
+    <noscript>
+      <p class="no-script">JavaScript is required to access this page.</p>
+    </noscript>
+  </body>
+</html>

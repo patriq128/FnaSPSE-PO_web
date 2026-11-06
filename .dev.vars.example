@@ -1,0 +1,4 @@
+# Copy this file to .dev.vars for local development.
+# In Cloudflare Pages, set both values as encrypted variables in the dashboard.
+GAME_PASSWORD="replace-with-a-long-shared-password"
+SESSION_SECRET="replace-with-at-least-32-random-characters"
