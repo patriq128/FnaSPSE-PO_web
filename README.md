@@ -119,10 +119,31 @@ Open <http://localhost:8788>. Wrangler reads `wrangler.toml` and `.dev.vars`.
    - **Build command:** leave empty
    - **Build output directory:** `public`
    - **Root directory:** repository root
-5. Add `GAME_PASSWORD` and `SESSION_SECRET` under **Variables and Secrets**.
+   - **Deploy command** (if shown): leave empty
+5. Add `GAME_PASSWORD` and `SESSION_SECRET` under **Variables and Secrets** for Production and Preview. These are runtime secrets for the Functions.
 6. Deploy.
 
+Do not add `npx wrangler pages deploy public` as a build or deploy command. Cloudflare Pages uploads the build output and deploys the Functions itself after the build. Calling Wrangler from inside a Pages build uses the build system's internal token and fails with `Authentication error [code: 10000]`.
+
+Do not put `CLOUDFLARE_API_TOKEN` or `CLOUDFLARE_ACCOUNT_ID` in the Pages project's runtime Variables and Secrets. They are deployment credentials, not application configuration, and they do not replace the internal build token.
+
 Cloudflare detects the `/functions` directory at the repository root and deploys the API automatically. Every push to the production branch creates a new deployment.
+
+### GitHub Actions alternative
+
+The workflow in [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) deploys with Wrangler from GitHub Actions instead of using the Pages build system. It is manual by default.
+
+1. Create a Cloudflare API token with **Account → Cloudflare Pages → Edit**. The `Account API Tokens` permission is not needed for deployment.
+2. In GitHub, open **Settings → Secrets and variables → Actions** and add:
+   - `CLOUDFLARE_API_TOKEN`: the token value
+   - `CLOUDFLARE_ACCOUNT_ID`: your Cloudflare account ID
+3. In GitHub, open **Actions → Deploy to Cloudflare Pages → Run workflow**.
+
+To deploy automatically on every push, uncomment the `push` trigger in the workflow and disable automatic deployments in Cloudflare under **Build → Branch control**:
+- Turn off **Enable automatic production branch deployments**.
+- Set the preview branch to **None**.
+
+Run only one deployment system per branch, otherwise each push deploys twice.
 
 ### Wrangler CLI
 
