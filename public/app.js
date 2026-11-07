@@ -154,9 +154,13 @@
     );
 
     downloadsTitle.textContent = gameName;
-    description.textContent =
-      typeof game.description === "string" ? game.description : "";
-    description.hidden = !description.textContent;
+
+    if (description) {
+      description.textContent =
+        typeof game.description === "string" ? game.description : "";
+      description.hidden = !description.textContent;
+    }
+
     platformList.replaceChildren(...(playRow ? [playRow, ...rows] : rows));
 
     setFooter(game);
