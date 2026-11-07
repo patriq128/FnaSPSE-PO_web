@@ -253,6 +253,16 @@ body {
     background-color 140ms ease;
 }
 
+.platform--play .platform__name {
+  font-weight: 600;
+}
+
+.platform__action--primary {
+  border-color: transparent;
+  background: var(--text);
+  color: var(--bg);
+}
+
 .platform__status {
   flex: none;
   color: var(--faint);
@@ -305,6 +315,11 @@ body {
   .platform__action:hover {
     border-color: #5b5b63;
     background: #141416;
+  }
+
+  .platform__action--primary:hover {
+    border-color: transparent;
+    background: #d8d8d3;
   }
 }
 

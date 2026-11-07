@@ -20,6 +20,25 @@ export const game = {
 };
 
 /**
+ * The in-browser build, shown as a "Play in browser" option above the
+ * download list.
+ *
+ * Upload the exported `Web_Game` folder to a static host (Cloudflare R2 with
+ * a custom domain, itch.io, Netlify, …) and paste the public URL of
+ * FnaSPSE.html here.
+ *
+ * Cloudflare Pages cannot host these files itself: the 120 MB .pck and the
+ * 38 MB .wasm are above its 25 MiB per-file limit.
+ *
+ * Set available to false (or leave the URL empty) to hide the option.
+ */
+export const webGame = {
+  available: true,
+  size: "153 MB",
+  url: "https://fnaspse.netlify.app",
+};
+
+/**
  * The platforms shown on the download screen.
  *
  * To publish a build:

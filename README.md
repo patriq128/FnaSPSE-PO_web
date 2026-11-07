@@ -174,10 +174,25 @@ If you rename the project, update `name` in `wrangler.toml`.
 
 A public GitHub release means anyone with the asset URL can download the file. The password protects the page that presents the links; it does not make GitHub-hosted files private.
 
+## 6. Add the in-browser build
+
+The exported Godot web build lives in `Web_Game/`. This site does not serve it directly: Cloudflare Pages rejects files larger than 25 MiB, and `FnaSPSE.pck` (120 MB) and `FnaSPSE.wasm` (38 MB) are well above that limit. Host the folder elsewhere and link to it.
+
+1. Upload the contents of `Web_Game/` to a static host with no per-file size limit — for example a Cloudflare R2 bucket with a custom domain, Netlify, or itch.io. Keep the file names and the flat folder structure.
+2. Check the response content types: `.wasm` should be `application/wasm`, `.js` `text/javascript`, `.html` `text/html` and `.pck` `application/octet-stream`. R2 infers these from the file extension on upload; set them explicitly if your host does not.
+3. Open the hosted `FnaSPSE.html` and confirm the game loads.
+4. In [`functions/_config.js`](functions/_config.js), set `webGame.available` to `true` and paste the public URL of `FnaSPSE.html` into `webGame.url`. It must use `https://`.
+
+The "Play in browser" option then appears above the download list after sign-in and opens the hosted build in a new tab. As with GitHub Releases, anyone who knows the hosted URL can open the build; the password protects the page that links to it, not the host itself.
+
+No cross-origin isolation headers are required: this export has Godot threads disabled (`GODOT_THREADS_ENABLED = false`).
+
+Keep `Web_Game/` out of the repository: GitHub rejects files over 100 MB, and `FnaSPSE.pck` is 120 MB. Upload it directly to the host instead.
+
 ## How it works
 
 - `POST /api/login` verifies the password on the server with a constant-time comparison, then sets a 12-hour signed session cookie (`HttpOnly`, `SameSite=Lax`, and `Secure` over HTTPS).
-- `GET /api/config` returns only the game name and version before sign-in. Download URLs, file sizes and checksums are returned only for a valid session.
+- `GET /api/config` returns only the game name and version before sign-in. The browser build URL, download URLs, file sizes and checksums are returned only for a valid session.
 - Session tokens are HMAC-signed. Changing `GAME_PASSWORD` or `SESSION_SECRET` invalidates every existing session.
 - Failed sign-ins are limited to 10 per IP address per 15 minutes. This limiter is in-memory and per Cloudflare isolate, so it is best-effort and deliberately requires no database.
 - The page sends a strict CSP and related security headers via `public/_headers`.

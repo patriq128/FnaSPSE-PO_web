@@ -10,7 +10,10 @@ import {
   onRequestPost as signIn,
 } from "../functions/api/login.js";
 import { onRequest as notFoundApi } from "../functions/api/[[path]].js";
-import { normalizePlatforms } from "../functions/_lib/game.js";
+import {
+  normalizePlatforms,
+  normalizeWebGame,
+} from "../functions/_lib/game.js";
 
 const env = {
   GAME_PASSWORD: "correct horse battery staple",
@@ -53,6 +56,7 @@ test("unauthenticated config exposes only basic game metadata", async () => {
   assert.equal(data.authenticated, false);
   assert.equal(data.game.name, "FnaSPSE");
   assert.equal("platforms" in data, false);
+  assert.equal("webGame" in data, false);
   assert.equal("description" in data.game, false);
   assert.equal(response.headers.get("Cache-Control"), "no-store");
 
@@ -72,6 +76,7 @@ test("the correct password creates a secure, signed session", async () => {
   assert.equal(response.status, 200);
   assert.equal(data.authenticated, true);
   assert.ok(Array.isArray(data.platforms));
+  assert.equal(typeof data.webGame, "object");
   assert.match(setCookie, /fnaspse_session=/);
   assert.match(setCookie, /HttpOnly/);
   assert.match(setCookie, /SameSite=Lax/);
@@ -91,6 +96,7 @@ test("the correct password creates a secure, signed session", async () => {
   assert.equal(configResponse.status, 200);
   assert.equal(configData.authenticated, true);
   assert.ok(Array.isArray(configData.platforms));
+  assert.equal(typeof configData.webGame, "object");
 });
 
 test("local http sign-in does not set the Secure cookie flag", async () => {
@@ -295,4 +301,32 @@ test("platform normalization only publishes complete HTTPS builds", () => {
   assert.equal(result[2].available, false);
   assert.equal(result[2].url, null);
   assert.equal(result[3].available, false);
+});
+
+test("web game normalization only publishes a complete HTTPS build", () => {
+  assert.deepEqual(
+    normalizeWebGame({
+      available: true,
+      size: " 153 MB ",
+      url: "https://game.example.com/FnaSPSE.html",
+    }),
+    {
+      available: true,
+      size: "153 MB",
+      url: "https://game.example.com/FnaSPSE.html",
+    },
+  );
+
+  for (const invalid of [
+    { available: false, url: "https://game.example.com/FnaSPSE.html" },
+    { available: true, url: "" },
+    { available: true, url: "http://game.example.com/FnaSPSE.html" },
+    { available: true, url: "javascript:alert(1)" },
+  ]) {
+    assert.deepEqual(normalizeWebGame(invalid), {
+      available: false,
+      size: null,
+      url: null,
+    });
+  }
 });

@@ -1,4 +1,4 @@
-import { game, platforms } from "../_config.js";
+import { game, platforms, webGame } from "../_config.js";
 
 function text(value, maxLength) {
   return typeof value === "string"
@@ -66,12 +66,26 @@ export function normalizePlatforms(entries) {
   });
 }
 
+export function normalizeWebGame(entry) {
+  const url = httpsUrl(entry && entry.url);
+  const size = text(entry && entry.size, 40);
+  const available =
+    Boolean(entry) && entry.available === true && Boolean(url);
+
+  return {
+    available,
+    size: available ? size || null : null,
+    url: available ? url : null,
+  };
+}
+
 export function downloadPageData() {
   return {
     game: {
       ...publicGame(),
       description: text(game && game.description, 500),
     },
+    webGame: normalizeWebGame(webGame),
     platforms: normalizePlatforms(platforms),
   };
 }

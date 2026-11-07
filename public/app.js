@@ -39,6 +39,47 @@
     submitButton.textContent = isBusy ? "Checking…" : "Continue";
   }
 
+  function createPlayRow(webGame, gameName) {
+    if (
+      !webGame ||
+      webGame.available !== true ||
+      typeof webGame.url !== "string" ||
+      webGame.url.length === 0
+    ) {
+      return null;
+    }
+
+    const row = document.createElement("li");
+    const details = document.createElement("div");
+    const name = document.createElement("span");
+    const meta = document.createElement("span");
+    const action = document.createElement("a");
+    const size = typeof webGame.size === "string" ? webGame.size : "";
+    const summary = ["Web", size].filter(Boolean).join(" · ");
+
+    row.className = "platform platform--play";
+    details.className = "platform__details";
+    name.className = "platform__name";
+    name.textContent = "Play in browser";
+    meta.className = "platform__meta";
+    meta.textContent = summary;
+
+    action.className = "platform__action platform__action--primary";
+    action.href = webGame.url;
+    action.textContent = "Play";
+    action.target = "_blank";
+    action.setAttribute("rel", "noopener noreferrer");
+    action.setAttribute(
+      "aria-label",
+      `Play ${gameName} in your browser (opens in a new tab)`,
+    );
+
+    details.append(name, meta);
+    row.append(details, action);
+
+    return row;
+  }
+
   function createPlatformRow(platform, gameName) {
     const row = document.createElement("li");
     const details = document.createElement("div");
@@ -107,6 +148,7 @@
         ? game.name.trim()
         : "FnaSPSE";
     const entries = Array.isArray(data.platforms) ? data.platforms : [];
+    const playRow = createPlayRow(data.webGame, gameName);
     const rows = entries.map((platform) =>
       createPlatformRow(platform || {}, gameName),
     );
@@ -115,7 +157,7 @@
     description.textContent =
       typeof game.description === "string" ? game.description : "";
     description.hidden = !description.textContent;
-    platformList.replaceChildren(...rows);
+    platformList.replaceChildren(...(playRow ? [playRow, ...rows] : rows));
 
     setFooter(game);
 
